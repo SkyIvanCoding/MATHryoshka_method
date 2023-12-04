@@ -1,0 +1,68 @@
+# THE MAIN ALGORITHM
+
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+
+v_0 = 40  # m/s
+v_mh = 200  # m/s
+cd = 0.013  # drag coefficient
+pho = 1.29  # air density in kg/m^3 (typical value at sea level)
+csa = 0.25  # cross-sectional area, m^2
+m = 50  # kg
+t = 10  # seconds
+e = 2.71828
+g = 9.81  # m/s^2
+
+# Vertical diving, theta = -90
+b = 0.5 * pho * csa * cd
+f_mh = round(b * v_mh**2, 4)
+f_t = round(np.sqrt(f_mh**2 + (m*g)**2), 4)
+q = m * g + f_t
+v = round((np.sqrt(q / b)) * np.tanh((np.sqrt(b * q) / m) * t) + v_0, 2)
+dist = round((m / b) * np.log(np.cosh((np.sqrt(b * q) / m) * t)) + (v_0 * t))
+print("Vertical diving. Velocity in", t, "seconds:", v, "m/s")
+print("Vertical diving. Distance in", t, "seconds:", dist, "m")
+
+# Making lists for plotting
+time = []
+velocity = []
+distance = []
+angle = []
+dist_angl = []
+
+# Looping angle theta [0, pi] to change gravity impact on distance traveled
+for i in range(0, 181, 5):
+    theta = np.radians(i)
+    g_relative = 9.81 * np.sin(theta)
+    b = 0.5 * pho * csa * cd
+    f_mh = round(b * v_mh ** 2, 4)
+    f_t = round(np.sqrt(f_mh ** 2 + (m * g_relative) ** 2), 4)
+    q = m * g_relative + f_t
+    dist = round((m / b) * np.log(np.cosh((np.sqrt(b * q) / m) * t)) + (v_0 * t))
+    print("Distance in", t, "seconds:", dist, "m", "with theta", -i, "degrees")
+    angle.append(np.degrees(theta))
+    dist_angl.append(dist)
+
+# Looping time in a range
+for t in range(300):
+    v = round((np.sqrt(q / b)) * np.tanh((np.sqrt(b * q) / m) * t) + v_0, 2)
+    dist = round((m / b) * np.log(np.cosh((np.sqrt(b * q) / m) * t)) + (v_0 * t))
+    time.append(t)
+    velocity.append(v)
+    distance.append(dist)
+
+# Plot v(t), v_0 is considered in the equation
+plt.plot(time, velocity, marker='o')
+plt.title('Velocity vs Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Velocity (m/s)')
+plt.grid(True)
+plt.show()
+
+# Plot Pitch angle Theta vs Distance travelled, v_0 is considered in the calculation
+angle = [-1 * i for i in angle]
+theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
+plt.polar(theta, dist_angl, marker='o', linestyle='-')
+plt.title('Pitch angle Theta vs Distance travelled')
+plt.show()
