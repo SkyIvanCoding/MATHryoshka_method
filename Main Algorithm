@@ -44,7 +44,7 @@ for i in range(0, 181, 5):
     q = m * g_relative + f_dm
     dist = round(m * np.log(np.cosh((np.sqrt(b * q) / m) * (t + t_0)) /
                       np.cosh(t_0 * np.sqrt(b * q) / m)) / b)
-    print("Distance travelled in", t, "seconds:", dist, "m", "with theta", -i, "degrees.")
+    print("Distance travelled in", t, "seconds:", dist, "m with theta", -i, "degrees.")
     angle.append(np.degrees(theta))
     dist_angl.append(dist)
 
