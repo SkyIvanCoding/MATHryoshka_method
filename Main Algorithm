@@ -1,4 +1,4 @@
-# Quadcopter UDUM diving model
+# Model of separation with UDUM quadcopter via Mathryoshaka method
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,7 +34,7 @@ for t_loop in range(60):
     time.append(t_loop)
     velocity.append(v)
 
-# Looping angle theta [0, pi] to change gravity impact. Finding distance traveled vs theta
+# Looping angle theta [0, -pi] to change gravity impact in diving. Finding distance traveled vs theta
 for i in range(0, 181, 5):
     t = 10
     theta = np.radians(i)
@@ -48,6 +48,13 @@ for i in range(0, 181, 5):
     angle.append(np.degrees(theta))
     dist_angl.append(dist)
 
+# Looping angle theta (0, pi) to add distance traveled to the graph for ascending
+for j in range(-175, -4, 5):
+    theta = np.radians(j)
+    angle.append(np.degrees(theta))
+    dist_angl.append(dist_angl[0])
+print("The min safe horizontal separation is:", dist_angl[0], "m")
+
 # Plot v(t), v_0 is considered in the equation
 plt.plot(time, velocity, marker='o')
 plt.title('Velocity vs Time')
@@ -56,7 +63,8 @@ plt.ylabel('Velocity (m/s)')
 plt.grid(True)
 plt.show()
 
-# Plot Pitch angle Theta vs Distance travelled, v_0 is considered in the calculation
+# Plot Pitch angle Theta vs Distance travelled, v_0 is considered in the calculation.
+# For the ascending part, the distance traveled is significantly approximated.
 angle = [-1 * i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
 plt.polar(theta, dist_angl, marker='o', linestyle='-')
