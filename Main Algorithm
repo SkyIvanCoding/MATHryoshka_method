@@ -50,7 +50,7 @@ for step in range(0, 361, 5):
     distance_list.append(position[-1])
     # Multiply elements of distance_list by sqrt(2) to get safety_dist
     safety_dist = [i * np.sqrt(2) for i in distance_list]
-    print("Theta:", angle[-1], "velocity:", velocity[-1], "Distance travelled:", position[-1], "Safety distance:", safety_dist[-1])
+    print("Theta:", angle[-1], "velocity:", velocity[-1], "horizontal separation:", position[-1], "safety area:", safety_dist[-1])
 
 
 # Plot Pitch angle Theta vs Distance travelled.
