@@ -48,8 +48,7 @@ for step in range(0, 361, 5):
     distance_list.append(position[-1])
     # print("Theta:", angle[-1], "velocity:", velocity[-1], "position:", position[-1])
 
-# Plot Pitch angle Theta vs Distance travelled, v_0 is considered in the calculation.
-# For the ascending part, the distance traveled is significantly approximated.
+# Plot Pitch angle Theta vs Distance travelled.
 angle = [-1 * i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
 plt.polar(theta, distance_list, marker='o', linestyle='-')
