@@ -1,72 +1,65 @@
-# Model of separation with UDUM quadcopter via Mathryoshaka method
+# Model of separation with UDUM quadcopter via MATHryoshka method
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 
-# Given values
-v_0 = 40  # m/s
-v_mh = 200  # m/s
-cd = 0.013  # drag coefficient
-rho = 1.29  # air density in kg/m^3 (typical value at sea level)
+# Constants
+m = 6  # mass, kg
+v_mh = 89  # max horizontal velocity, m/s
 csa = 0.25  # cross-sectional area, m^2
-m = 10  # kg
-t = 10  # seconds
-e = 2.71828
-g = 9.81  # m/s^2
+cd = 0.013  # drag coefficient
+g = 9.81  # gravity, m/s^2
+v_0 = 40  # initial velocity, m/s
+z_0 = 0  # initial height, meters
+rho = 1.29  # air density, kg/m^3 (sea level)
+
+dt = 0.01  # time step in seconds
+num_steps = 1000  # number of time steps
+
+# Arrays for storing values
+time = np.zeros(num_steps)
+velocity = np.zeros(num_steps)
+position = np.zeros(num_steps)
+
+# Initial conditions
+velocity[0] = v_0
+position[0] = z_0
+angle = []
+velocity_list = []
+distance_list = []
 
 # Basic equations
 b = 0.5 * rho * csa * cd
-f_mh = round(b * v_mh ** 2, 4)   # Projection of force of thrust max on horizontal axis in horizontal flight
-f_t = round(np.sqrt(f_mh ** 2 + (m * g) ** 2), 4)   # Force of max thrust
-q = m * g + f_t
-t_0 = m * np.arctanh(v_0 * np.sqrt(b / q)) / np.sqrt(b * q)   # t_0(v_0)
+f_mh = round(b * (v_mh ** 2), 2)   # Projection of force of thrust max on horizontal axis in horizontal flight
+f_t = round(np.sqrt(f_mh ** 2 + (m * g) ** 2), 2)   # Force of max thrust
 
-# Making lists for plotting
-time = []
-velocity = []
-angle = []
-dist_angl = []
-
-# Looping time in a range to build v(t) graph for vertical diving case
-for t_loop in range(60):
-    v = round((np.sqrt(q / b)) * np.tanh((np.sqrt(b * q) / m) * (t_loop + t_0)), 2)
-    time.append(t_loop)
-    velocity.append(v)
-
-# Looping angle theta [0, -pi] to change gravity impact in diving. Finding distance traveled vs theta
-for i in range(0, 181, 5):
-    t = 10
-    theta = np.radians(i)
-    g_relative = round(9.81 * np.sin(theta), 4)   # g relative to theta
-    f_t = round(np.sqrt(f_mh ** 2 + (m * g) ** 2), 4)
-    f_dm = ((f_t * np.sin(theta))**2 + (f_mh * np.cos(theta))**2)**0.5   # vector of thrust to theta
-    q = m * g_relative + f_dm
-    dist = round(m * np.log(np.cosh((np.sqrt(b * q) / m) * (t + t_0)) /
-                      np.cosh(t_0 * np.sqrt(b * q) / m)) / b)
-    print("Distance travelled in", t, "seconds:", dist, "m with theta", -i, "degrees.")
+# Numerical integration via Euler method
+for step in range(0, 361, 5):
+    theta = np.radians(step)
+    f_dm = round(np.sqrt((f_t * np.sin(theta))**2 + (f_mh * np.cos(theta))**2), 2)
     angle.append(np.degrees(theta))
-    dist_angl.append(dist)
-
-# Looping angle theta (0, pi) to add distance traveled to the graph for ascending
-for j in range(-175, -4, 5):
-    theta = np.radians(j)
-    angle.append(np.degrees(theta))
-    dist_angl.append(dist_angl[0])
-print("The min safe horizontal separation is:", dist_angl[0], "m")
-
-# Plot v(t), v_0 is considered in the equation
-plt.plot(time, velocity, marker='o')
-plt.title('Velocity vs Time')
-plt.xlabel('Time (s)')
-plt.ylabel('Velocity (m/s)')
-plt.grid(True)
-plt.show()
+    for i in range(1, num_steps):
+        velocity[i] = velocity[i - 1] + (1 / m) * (f_dm + m * g * np.sin(theta) - b * velocity[i - 1]**2
+                                                   - b * velocity[i - 1]) * dt
+        position[i] = position[i - 1] + velocity[i] * dt
+        time[i] = time[i - 1] + dt   # for better time complexity use: time = 10
+    velocity_list.append(velocity[-1])
+    distance_list.append(position[-1])
+    # print("Theta:", angle[-1], "velocity:", velocity[-1], "position:", position[-1])
 
 # Plot Pitch angle Theta vs Distance travelled, v_0 is considered in the calculation.
 # For the ascending part, the distance traveled is significantly approximated.
 angle = [-1 * i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
-plt.polar(theta, dist_angl, marker='o', linestyle='-')
+plt.polar(theta, distance_list, marker='o', linestyle='-')
 plt.title('Pitch angle Theta vs Distance travelled (m)')
+plt.show()
+
+# Plot Velocity vs time
+plt.plot(time, velocity, marker='o')
+plt.title('Velocity vs Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Velocity (m/s)')
+plt.grid(True)
 plt.show()
