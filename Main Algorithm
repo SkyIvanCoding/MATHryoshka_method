@@ -1,16 +1,17 @@
-# Model of separation with UDUM quadcopter via MATHryoshka method
+# Model of separation with UDUM Rotary-wing or Fixed-wing aircraft via MATHryoshka method
+# Euler method is used for velocity and distance travelled
 
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 
 # Constants
-m = 6  # mass, kg
+m = 10  # mass, kg
 v_mh = 89  # max horizontal velocity, m/s
 csa = 0.25  # cross-sectional area, m^2
 cd = 0.013  # drag coefficient
 g = 9.81  # gravity, m/s^2
-v_0 = 40  # initial velocity, m/s
+v_0 = 20  # initial velocity, m/s
 z_0 = 0  # initial height, meters
 rho = 1.29  # air density, kg/m^3 (sea level)
 
@@ -28,6 +29,7 @@ position[0] = z_0
 angle = []
 velocity_list = []
 distance_list = []
+safety_dist = []
 
 # Basic equations
 b = 0.5 * rho * csa * cd
@@ -46,12 +48,16 @@ for step in range(0, 361, 5):
         time[i] = time[i - 1] + dt   # for better time complexity use: time = 10
     velocity_list.append(velocity[-1])
     distance_list.append(position[-1])
-    # print("Theta:", angle[-1], "velocity:", velocity[-1], "position:", position[-1])
+    # Multiply elements of distance_list by sqrt(2) to get safety_dist
+    safety_dist = [i * np.sqrt(2) for i in distance_list]
+    print("Theta:", angle[-1], "velocity:", velocity[-1], "Distance travelled:", position[-1], "Safety distance:", safety_dist[-1])
+
 
 # Plot Pitch angle Theta vs Distance travelled.
 angle = [-1 * i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
-plt.polar(theta, distance_list, marker='o', linestyle='-')
+plt.polar(theta, distance_list, marker='o', linestyle='-', color='red')
+plt.polar(theta, safety_dist, marker='o', linestyle='-', color='gray')
 plt.title('Pitch angle Theta vs Distance travelled (m)')
 plt.show()
 
