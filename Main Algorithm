@@ -58,7 +58,7 @@ angle = [-1 * i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
 plt.polar(theta, distance_list, marker='o', linestyle='-', color='red')
 plt.polar(theta, safety_dist, marker='o', linestyle='-', color='gray')
-plt.title('Pitch angle Theta vs Distance travelled (m)')
+plt.title('Pitch angle Theta vs horizontal separation (red) and safety area (gray)')
 plt.show()
 
 # Plot Velocity vs time
