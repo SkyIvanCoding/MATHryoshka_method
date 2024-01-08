@@ -1,4 +1,4 @@
-# Model of separation with UDUM Rotary-wing or Fixed-wing aircraft via MATHryoshka method
+# Model of separation with UDUM Rotary-wing aircraft via MATHryoshka method
 # Euler method is used for finding velocity and distance travelled
 
 import numpy as np
