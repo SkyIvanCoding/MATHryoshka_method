@@ -12,8 +12,9 @@ csa = 0.25  # cross-sectional area, m^2
 cd = 0.013  # drag coefficient
 g = 9.81  # gravity, m/s^2
 v_0 = 20  # initial velocity, m/s
-z_0 = 0  # initial height, meters
 rho = 1.29  # air density, kg/m^3 (sea level)
+dim_cd = 2  # max dimension of the conventional drone, m
+dim_udum = 1.5  # max dimension of the UDUM, m
 
 dt = 0.01  # time step in seconds
 num_steps = 1000  # number of time steps
@@ -25,7 +26,7 @@ position = np.zeros(num_steps)
 
 # Initial conditions
 velocity[0] = v_0
-position[0] = z_0
+position[0] = 0
 angle = []
 velocity_list = []
 distance_list = []
@@ -35,6 +36,7 @@ safety_dist = []
 b = 0.5 * rho * csa * cd
 f_mh = round(b * (v_mh ** 2), 2)   # Projection of force of thrust max on horizontal axis in horizontal flight
 f_t = round(np.sqrt(f_mh ** 2 + (m * g) ** 2), 2)   # Force of max thrust
+dim_impact = 0.5 * (dim_cd + dim_udum)  # dimension impact of the aircraft
 
 # Numerical integration via Euler method
 for step in range(0, 361, 5):
@@ -47,10 +49,10 @@ for step in range(0, 361, 5):
         position[i] = position[i - 1] + velocity[i] * dt
         time[i] = time[i - 1] + dt   # for better time complexity use: time = 10
     velocity_list.append(velocity[-1])
-    distance_list.append(position[-1])
+    distance_list.append(position[-1] + dim_impact)
     # Multiply elements of distance_list by sqrt(2) to get safety_dist
     safety_dist = [i * np.sqrt(2) for i in distance_list]
-    print("Theta:", angle[-1], "velocity:", velocity[-1], "horizontal separation:", position[-1], "safety area:", safety_dist[-1])
+    print("Theta:", angle[-1], "velocity:", velocity[-1], "horizontal separation:", position[-1] + dim_impact, "safety area:", safety_dist[-1])
 
 
 # Plot Pitch angle Theta vs Distance travelled.
