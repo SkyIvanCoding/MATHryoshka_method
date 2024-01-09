@@ -1,4 +1,4 @@
-# Model of separation with UDUM Rotary-wing aircraft via MATHryoshka method
+# Model of separation with UDUM rotary-wing aircraft via MATHryoshka method
 # Euler method is used for finding velocity and distance travelled
 
 import numpy as np
@@ -8,8 +8,8 @@ import math
 # Constants
 m = 10  # mass, kg
 v_mh = 89  # max horizontal velocity, m/s
-csa = 0.25  # cross-sectional area, m^2
-cd = 0.013  # drag coefficient
+csa = 0.4  # cross-sectional area, m^2
+cd = 0.2  # drag coefficient
 g = 9.81  # gravity, m/s^2
 v_0 = 20  # initial velocity, m/s
 rho = 1.29  # air density, kg/m^3 (sea level)
@@ -52,8 +52,15 @@ for step in range(0, 361, 5):
     distance_list.append(position[-1] + dim_impact)
     # Multiply elements of distance_list by sqrt(2) to get safety_dist
     safety_dist = [i * np.sqrt(2) for i in distance_list]
-    print("Theta:", angle[-1], "velocity:", velocity[-1], "horizontal separation:", position[-1] + dim_impact, "safety area:", safety_dist[-1])
-
+    # Print the results
+    if angle[-1] <= 90 and angle[-1] >= 0:
+        print("Theta (degrees):", round(angle[-1]*(-1)), "Velocity (m/s):", round(velocity[-1], 1),
+              "Horizontal separation (m):", round(position[-1] + dim_impact, 1),
+              "Safety area (m):", round(safety_dist[-1]))
+    if angle[-1] <= 360 and angle[-1] >= 270:
+        print("Theta (degrees):", round(360 - angle[-1]), "Velocity (m/s):", round(velocity[-1], 1),
+              "Horizontal separation (m):", round(position[-1] + dim_impact, 1),
+              "Safety area (m):", round(safety_dist[-1]))
 
 # Plot Pitch angle Theta vs Distance travelled.
 angle = [-1 * i for i in angle]
@@ -63,9 +70,9 @@ plt.polar(theta, safety_dist, marker='o', linestyle='-', color='gray')
 plt.title('Pitch angle Theta vs horizontal separation (red) and safety area (gray)')
 plt.show()
 
-# Plot Velocity vs time
+# Plot Velocity vs time for Theta = 0
 plt.plot(time, velocity, marker='o')
-plt.title('Velocity vs Time')
+plt.title('Velocity vs Time, Theta = 0°')
 plt.xlabel('Time (s)')
 plt.ylabel('Velocity (m/s)')
 plt.grid(True)
