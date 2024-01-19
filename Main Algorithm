@@ -17,7 +17,7 @@ dim_cd = 2  # max dimension of the conventional drone, m
 dim_udum = 1.5  # max dimension of the UDUM, m
 
 dt = 0.01  # time step in seconds
-num_steps = 1000  # number of time steps
+num_steps = 1000 # number of time steps
 
 # Arrays for storing values
 time = np.zeros(num_steps)
@@ -44,7 +44,7 @@ for step in range(0, 361, 5):
     f_dm = round(np.sqrt((f_t * np.sin(theta))**2 + (f_mh * np.cos(theta))**2), 2)
     angle.append(np.degrees(theta))
     for i in range(1, num_steps):
-        velocity[i] = velocity[i - 1] + (1 / m) * (f_dm + m * g * np.sin(theta) - b * velocity[i - 1]**2
+        velocity[i] = velocity[i - 1] + (1 / m) * (f_dm - m * g * np.sin(theta) - b * velocity[i - 1]**2
                       - b * velocity[i - 1]) * dt
         position[i] = position[i - 1] + velocity[i] * dt
         time[i] = time[i - 1] + dt   # for better time complexity use: time = 10
@@ -54,16 +54,16 @@ for step in range(0, 361, 5):
     safety_dist = [i * np.sqrt(2) for i in distance_list]
     # Print the results
     if angle[-1] <= 90 and angle[-1] >= 0:
-        print("Theta (degrees):", round(angle[-1]*(-1)), "Velocity (m/s):", round(velocity[-1], 1),
+        print("Theta (degrees):", round(angle[-1]), "Velocity (m/s):", round(velocity[-1], 1),
               "Minimum separation (m):", round(position[-1] + dim_impact, 1),
               "Safety area (m):", round(safety_dist[-1]))
     if angle[-1] <= 360 and angle[-1] >= 270:
-        print("Theta (degrees):", round(360 - angle[-1]), "Velocity (m/s):", round(velocity[-1], 1),
+        print("Theta (degrees):", round(angle[-1] - 360), "Velocity (m/s):", round(velocity[-1], 1),
               "Minimum separation (m):", round(position[-1] + dim_impact, 1),
               "Safety area (m):", round(safety_dist[-1]))
 
 # Plot Pitch angle Theta vs Distance travelled.
-angle = [-1 * i for i in angle]
+angle = [i for i in angle]
 theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
 plt.polar(theta, distance_list, marker='o', linestyle='-', color='red')
 plt.polar(theta, safety_dist, marker='o', linestyle='-', color='gray')
