@@ -1,5 +1,5 @@
 # Model of separation with UDUM rotary-wing aircraft via MATHryoshka method
-# Euler method is used for finding velocity and distance travelled
+# Euler method is used for finding velocity and distance_plnd travelled
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,12 +40,12 @@ dim_impact = 0.5 * (dim_cd + dim_udum)  # dimension impact of the aircraft
 
 # Numerical integration via Euler method
 for step in range(0, 361, 5):
-    theta = np.radians(step)
-    f_dm = round(np.sqrt((f_t * np.sin(theta))**2 + (f_mh * np.cos(theta))**2), 2)
-    angle.append(np.degrees(theta))
+    gamma = np.radians(step)
+    f_dm = round(np.sqrt((f_t * np.sin(gamma)) ** 2 + (f_mh * np.cos(gamma)) ** 2), 2)
+    angle.append(np.degrees(gamma))
     for i in range(1, num_steps):
-        velocity[i] = velocity[i - 1] + (1 / m) * (f_dm - m * g * np.sin(theta) - b * velocity[i - 1]**2
-                      - b * velocity[i - 1]) * dt
+        velocity[i] = velocity[i - 1] + (1 / m) * (f_dm - m * g * np.sin(gamma) - b * velocity[i - 1] ** 2
+                                                   - b * velocity[i - 1]) * dt
         position[i] = position[i - 1] + velocity[i] * dt
         time[i] = time[i - 1] + dt   # for better time complexity use: time = 10
     velocity_list.append(velocity[-1])
@@ -54,25 +54,25 @@ for step in range(0, 361, 5):
     safety_dist = [i * np.sqrt(2) for i in distance_list]
     # Print the results
     if angle[-1] <= 90 and angle[-1] >= 0:
-        print("Theta (degrees):", round(angle[-1]), "Velocity (m/s):", round(velocity[-1], 1),
+        print("Gamma (degrees):", round(angle[-1]), "Velocity (m/s):", round(velocity[-1], 1),
               "Minimum separation (m):", round(position[-1] + dim_impact, 1),
               "Safety area (m):", round(safety_dist[-1]))
     if angle[-1] <= 360 and angle[-1] >= 270:
-        print("Theta (degrees):", round(angle[-1] - 360), "Velocity (m/s):", round(velocity[-1], 1),
+        print("Gamma (degrees):", round(angle[-1] - 360), "Velocity (m/s):", round(velocity[-1], 1),
               "Minimum separation (m):", round(position[-1] + dim_impact, 1),
               "Safety area (m):", round(safety_dist[-1]))
 
-# Plot Pitch angle Theta vs Distance travelled.
+# Plot flight path angle Gamma vs Distance travelled.
 angle = [i for i in angle]
-theta = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
-plt.polar(theta, distance_list, marker='o', linestyle='-', color='red')
-plt.polar(theta, safety_dist, marker='o', linestyle='-', color='gray')
-plt.title('Pitch angle Theta vs minimum separation (red) and safety area (gray)')
+gamma = [math.radians(d) for d in angle]  # Convert degrees to radians for polar plot
+plt.polar(gamma, distance_list, marker='o', linestyle='-', color='red')
+plt.polar(gamma, safety_dist, marker='o', linestyle='-', color='gray')
+plt.title('Flight path angle Gamma vs minimum separation (red) and safety area (gray)')
 plt.show()
 
-# Plot Velocity vs time for Theta = 0
+# Plot Velocity vs Time for Gamma = 0
 plt.plot(time, velocity, marker='o')
-plt.title('Velocity vs Time, Theta = 0°')
+plt.title('Velocity vs Time, Gamma = 0°')
 plt.xlabel('Time (s)')
 plt.ylabel('Velocity (m/s)')
 plt.grid(True)
