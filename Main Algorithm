@@ -12,7 +12,7 @@ csa = 0.4  # cross-sectional area, m^2
 cd = 0.2  # drag coefficient
 g = 9.81  # gravity, m/s^2
 v_0 = 10  # initial velocity, m/s
-rho = 1.29  # air density, kg/m^3 (sea level)
+rho = 1.225  # air density, kg/m^3 (sea level)
 dim_cd = 2  # max dimension of the conventional drone, m
 dim_udum = 1.5  # max dimension of the UDUM, m
 
